@@ -1,0 +1,50 @@
+---
+output:
+  html_document: default
+---
+Demonstration of fighelper functions
+========================================================
+
+```{r}
+library(ggplot2)
+library("xtable")
+figfiles <- list()
+source("R/fighelper.R")
+figures_dir <- "output"
+if( !file.exists(figures_dir) ) { dir.create(figures_dir) }
+```
+
+```{r results='asis'}
+# Make some plots
+carplot <- qplot(x=cars$speed,y=cars$dist)
+carplot_supp <- qplot(mpg, data=mtcars,binwidth = 30)
+bodplot <- qplot(x=Time,y=demand,data=BOD)
+
+# save the plots into a list
+# this determines how the figure will be output
+# and is very easy to insert into your R script to extract
+# a figure for your manuscript
+
+# a regular figure
+figfiles[["cars"]] <- list(plot = carplot, file = "output/cars", legend="A plot about cars.")
+
+# a supplementary figure with the display width set 
+# (this does not affect the saved image file)
+figfiles[["cars_supp"]] <- list(supplementary="Figure", plot = carplot_supp, file = "output/cars_supp", legend="A supplementary plot about cars.", display_width=200)
+
+# another regular figure, this time specifying the output resolution and dimensions, 
+# but leaving display_width as default
+# (this does affect the saved image file)
+figfiles[["BOD"]] <- list(plot = bodplot, file = "output/bod", legend="This plot has higher resolution and different shape compared to the others", width=6,height=3, res=400, units="in")
+
+# a regular table
+figfiles[["cars table"]] <- list(table = cars, file = "output/cars.csv", legend="Cars data")
+
+# Once all of the figures and tables are stored in the list
+# build the figures and tables (export graphics and .csv)
+build_figures(figfiles)
+
+# And optionally display the figures in an html file
+display_figures(figfiles)
+```
+
